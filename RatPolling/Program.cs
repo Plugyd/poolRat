@@ -7,26 +7,47 @@ namespace RatPolling
 {
     class Program
     {
+        private static bool ScanDir(string Path)
+        {
+            try 
+            { 
+                string[] dirs = Directory.GetDirectories(Path);
+
+                if (dirs.Length == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    foreach (string dir in dirs)
+                    {
+                        Console.WriteLine(dir);
+                        ScanDir(dir);
+                    }
+                }
+
+             
+            }
+            catch(System.UnauthorizedAccessException e)
+            {
+                Console.WriteLine("Error! "+ e);
+
+            }
+            catch
+            {
+                Console.WriteLine("Error! Other" );
+
+            }
+            return true;
+        }
+
         static void Main(string[] args)
         {
             String UserName = "TestPC";
             string CurrentUser = Environment.UserName;
 
 
-            try
-            {
-                string[] dirsForScan = { "c:\\", "C:\\Program Files", "C:\\Users", "C:\\Users\\"+ CurrentUser, "","" };
-                string[] dirs = Directory.GetDirectories(@"c:\");
-                Console.WriteLine("The number of directories starting with p is {0}.", dirs.Length);
-                foreach (string dir in dirs)
-                {
-                    Console.WriteLine(dir);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("The process failed: {0}", e.ToString());
-            }
+            ScanDir("C:\\Users");
 
 
             Console.WriteLine("Connection..." + CurrentUser);
